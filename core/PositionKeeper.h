@@ -5,7 +5,7 @@ class PositionKeeper {
 private:
      double _cashbalance = 0;
      double _instrumentbalance = 0;
-     string _securityid;
+     string _symbol;
      string _ccy;
 public:
      void addcash(double amt) {
@@ -14,16 +14,16 @@ public:
      void addinstrument(double amt) {
          _instrumentbalance += amt;
      }
-     PositionKeeper(string ccy, double initcashbalance, string securityid, double initinstrumentbalance) {
+     PositionKeeper(string ccy, double initcashbalance, string symbol, double initinstrumentbalance) {
         _ccy = ccy;
 	_cashbalance = initcashbalance;
-	_securityid = securityid;
+	_symbol = symbol;
 	_instrumentbalance = initinstrumentbalance;
      }
      double cashbalance() { return _cashbalance; }
      double instrumentbalance() { return _instrumentbalance; }
      string ccy() { return _ccy; }
-     string securityid() { return _securityid; }
+     string symbol() { return _symbol; }
      ~PositionKeeper() {
          cerr << "\nPositionKeeper Destructor: " << this << endl;
      }

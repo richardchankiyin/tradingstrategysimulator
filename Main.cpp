@@ -97,7 +97,7 @@ int main() {
 
    OrderInfo o4 = OrderInfo("sender4","444","TSLA.US",'D',115.0,'1');
    cout << "Order 4 before: " << o4.orderid() << " cumqty: "<< o4.cumqty() << endl;
-   o4.cumqty(110);
+   o4.lastqty(110);
    cout << "Order 4 after: " << o4.orderid() << " cumqty: "<< o4.cumqty() << endl;
 
    PositionKeeper pk = PositionKeeper("USD",1000000.0,"TSLA.US",0);

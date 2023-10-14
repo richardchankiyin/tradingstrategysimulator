@@ -13,7 +13,7 @@ using namespace std;
 
 class SimpleMMTradingStrategy: public TradingStrategy {
 private:
-     string _securityid;
+     string _symbol;
      string _ccy;
      double _initcashbalance;
      double _initinstrumentbalance;
@@ -27,9 +27,9 @@ private:
      PositionKeeper* _pk;  
 
 public:
-     SimpleMMTradingStrategy(string ccy, double initcashbalance, string securityid, double initinstrumentbalance, double securitysecmarketbestbid, double securitysecmarketbestask, double securitysecmarketbestbidqty, double securitysecmarketbestaskqty,double orderqty) {
+     SimpleMMTradingStrategy(string ccy, double initcashbalance, string symbol, double initinstrumentbalance, double securitysecmarketbestbid, double securitysecmarketbestask, double securitysecmarketbestbidqty, double securitysecmarketbestaskqty,double orderqty) {
         _ccy=ccy;
-	_securityid=securityid;
+	_symbol=symbol;
 	_initcashbalance=initcashbalance;
 	_initinstrumentbalance=initinstrumentbalance;
         _securitysecmarketbestbid=securitysecmarketbestbid;
@@ -38,7 +38,7 @@ public:
         _securitysecmarketbestaskqty=securitysecmarketbestaskqty;
 	_initinstrumentsecmarketprice=(securitysecmarketbestbid+securitysecmarketbestask)/2;
 	_orderqty=orderqty;
-	_pk = new PositionKeeper(_ccy,_initcashbalance,_securityid,_initinstrumentbalance);
+	_pk = new PositionKeeper(_ccy,_initcashbalance,_symbol,_initinstrumentbalance);
      }
      ~SimpleMMTradingStrategy() {
         delete _pk;
@@ -50,7 +50,7 @@ public:
         _securitysecmarketbestaskqty=securitysecmarketbestaskqty;
      }
      string ccy() { return _ccy; }
-     string securityid() { return _securityid; }
+     string symbol() { return _symbol; }
      double initcashbalance() { return _initcashbalance; }
      double initinstrumentbalance() { return _initinstrumentbalance; }
      double initinstrumentsecmarketprice() { return _initinstrumentsecmarketprice; }

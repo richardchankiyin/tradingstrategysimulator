@@ -24,11 +24,14 @@ class OrderInfo {
     time_t _transacttime;
     // equivalent to fix tag 14
     double _cumqty;
+    // equivalent to fix tag 32
+    double _lastqty;
 
   public:
     OrderInfo() {}
     OrderInfo(string,string,string,char,double,char,time_t);//market order constructor
     OrderInfo(string,string,string,char,double,double,char,time_t);//limit order constructor
+    OrderInfo(string,string,time_t);//cancel order constructor
     string senderid() { return _senderid; } 
     string orderid() { return _orderid; }
     string symbol() { return _symbol; }
@@ -38,8 +41,11 @@ class OrderInfo {
     double price() { return _price; }
     char side() { return _side; }
     time_t transacttime() { return _transacttime; }
+    
     double cumqty() { return _cumqty; }
-    void cumqty(double q) { _cumqty = q; }
+    double lastqty() { return _lastqty; }
+    void lastqty(double lastqty) { _lastqty = lastqty; _cumqty += _lastqty; } 
+    double outstandingqty() { return _orderqty - _cumqty; }
     ~OrderInfo() { cout << "\nOrderInfo Destructor: " << this << endl; }
 
 };
@@ -67,6 +73,13 @@ OrderInfo::OrderInfo(string senderid,string orderid,string symbol,char msgtype,d
     _side=side;
     _transacttime=transacttime;
     _cumqty = 0;
+}
+
+OrderInfo::OrderInfo(string senderid,string orderid,time_t transacttime=time(0)) {
+    _senderid=senderid;
+    _orderid=orderid;
+    _msgtype='G';
+    _transacttime=transacttime;
 }
 
 

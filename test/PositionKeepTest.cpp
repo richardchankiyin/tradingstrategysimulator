@@ -8,7 +8,7 @@ using namespace std;
 DEFINE_TEST(PositionKeepInit) {
    PositionKeeper pk = PositionKeeper("USD",1000000.0,"TSLA.US",0);
    TEST("USD"==pk.ccy());
-   TEST("TSLA.US"==pk.securityid());
+   TEST("TSLA.US"==pk.symbol());
    TEST(0.0==pk.instrumentbalance());
    TEST(1000000.0==pk.cashbalance());
 }

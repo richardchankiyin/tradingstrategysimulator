@@ -10,7 +10,7 @@ using namespace std;
 DEFINE_TEST(SimpleMMTradingStrategyInit) {
    SimpleMMTradingStrategy ts = SimpleMMTradingStrategy("USD", 1000000, "TSLA.US", 0, 220, 225, 10000, 30000, 100);
    TEST("USD"==ts.ccy());
-   TEST("TSLA.US"==ts.securityid());
+   TEST("TSLA.US"==ts.symbol());
    TEST(0.0==ts.initinstrumentbalance());
    TEST(1000000.0==ts.initcashbalance());
    TEST(220==ts.securitysecmarketbestbid());
@@ -19,7 +19,6 @@ DEFINE_TEST(SimpleMMTradingStrategyInit) {
    TEST(30000==ts.securitysecmarketbestaskqty());
    TEST(1000000.0==ts.cashbalance());
    TEST(0.0==ts.instrumentbalance());
-   cout << ts.initinstrumentsecmarketprice() << endl;
    TEST(222.5==ts.initinstrumentsecmarketprice());
    TEST(100==ts.orderqty());
 }
