@@ -17,6 +17,7 @@ private:
      string _ccy;
      double _initcashbalance;
      double _initinstrumentbalance;
+     double _initinstrumentsecmarketprice;
      double _securitysecmarketbestbid;
      double _securitysecmarketbestask;
      double _securitysecmarketbestbidqty;
@@ -34,6 +35,7 @@ public:
         _securitysecmarketbestask=securitysecmarketbestask;
         _securitysecmarketbestbidqty=securitysecmarketbestbidqty;
         _securitysecmarketbestaskqty=securitysecmarketbestaskqty;
+	_initinstrumentsecmarketprice=(securitysecmarketbestbid+securitysecmarketbestask)/2;
 	_pk = new PositionKeeper(_ccy,_initcashbalance,_securityid,_initinstrumentbalance);
      }
      ~SimpleMMTradingStrategy() {
@@ -49,6 +51,7 @@ public:
      string securityid() { return _securityid; }
      double initcashbalance() { return _initcashbalance; }
      double initinstrumentbalance() { return _initinstrumentbalance; }
+     double initinstrumentsecmarketprice() { return _initinstrumentsecmarketprice; }
      double securitysecmarketbestbid() { return _securitysecmarketbestbid; }
      double securitysecmarketbestask() { return _securitysecmarketbestask; }
      double securitysecmarketbestbidqty() { return _securitysecmarketbestbidqty; }

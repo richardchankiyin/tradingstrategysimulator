@@ -19,8 +19,19 @@ DEFINE_TEST(SimpleMMTradingStrategyInit) {
    TEST(30000==ts.securitysecmarketbestaskqty());
    TEST(1000000.0==ts.cashbalance());
    TEST(0.0==ts.instrumentbalance());
+   cout << ts.initinstrumentsecmarketprice() << endl;
+   TEST(222.5==ts.initinstrumentsecmarketprice());
 }
 
+
+DEFINE_TEST(SimpleMMTradingStrategyUpdateSecMarket) {
+   SimpleMMTradingStrategy ts = SimpleMMTradingStrategy("USD", 1000000, "TSLA.US", 0, 220, 225, 10000, 30000);
+   ts.setsecmarket(218, 220, 2000, 4000);
+   TEST(218==ts.securitysecmarketbestbid());
+   TEST(2000==ts.securitysecmarketbestbidqty());
+   TEST(220==ts.securitysecmarketbestask());
+   TEST(4000==ts.securitysecmarketbestaskqty());
+}
 
 
 int main()
