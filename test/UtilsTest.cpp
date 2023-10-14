@@ -39,6 +39,16 @@ DEFINE_TEST(avgpricequeuedepthmorethanqty) {
    TEST((220*3000+220.5*1000)/4000==actualresult); 
 }
 
+DEFINE_TEST(leastfavourpriceisbuytrue) {
+   double price = 100;
+   double margin = 0.1;
+   double result = Utils::leastfavourprice(price,0,margin);
+   TEST((100 * 1.1)==result);
+
+   result = Utils::leastfavourprice(price,1,margin);
+   TEST((100 / 1.1)==result);
+}
+
 
 
 

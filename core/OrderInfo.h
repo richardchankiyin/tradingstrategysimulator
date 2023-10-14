@@ -46,7 +46,7 @@ class OrderInfo {
     double lastqty() { return _lastqty; }
     void lastqty(double lastqty) { _lastqty = lastqty; _cumqty += _lastqty; } 
     double outstandingqty() { return _orderqty - _cumqty; }
-    ~OrderInfo() { cout << "\nOrderInfo Destructor: " << this << endl; }
+    ~OrderInfo() { cerr << "\nOrderInfo Destructor: " << this << endl; }
 
 };
 

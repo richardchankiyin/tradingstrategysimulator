@@ -38,5 +38,15 @@ public:
 	   }
 	}
      } 
-
+   
+    /**
+     * calculate least favour price, for isbuy is true, will discount from arg vice versa
+     * */ 
+    static double leastfavourprice(double price, bool isbuy, double margin) {
+        if (isbuy) {
+           return  price / (1+margin);
+	} else {
+           return price * (1 + margin); 
+	}
+    } 
 };
