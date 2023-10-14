@@ -24,4 +24,7 @@ public:
      double instrumentbalance() { return _instrumentbalance; }
      string ccy() { return _ccy; }
      string securityid() { return _securityid; }
+     ~PositionKeeper() {
+         cerr << "\nPositionKeeper Destructor: " << this << endl;
+     }
 };
