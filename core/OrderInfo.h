@@ -40,7 +40,7 @@ class OrderInfo {
     time_t transacttime() { return _transacttime; }
     double cumqty() { return _cumqty; }
     void cumqty(double q) { _cumqty = q; }
-    ~OrderInfo() { cout << "OrderInfo Destructor: " << this << endl; }
+    ~OrderInfo() { cout << "\nOrderInfo Destructor: " << this << endl; }
 
 };
 
