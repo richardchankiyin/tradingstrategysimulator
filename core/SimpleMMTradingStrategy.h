@@ -22,11 +22,12 @@ private:
      double _securitysecmarketbestask;
      double _securitysecmarketbestbidqty;
      double _securitysecmarketbestaskqty;
+     double _orderqty;
 
      PositionKeeper* _pk;  
 
 public:
-     SimpleMMTradingStrategy(string ccy, double initcashbalance, string securityid, double initinstrumentbalance, double securitysecmarketbestbid, double securitysecmarketbestask, double securitysecmarketbestbidqty, double securitysecmarketbestaskqty) {
+     SimpleMMTradingStrategy(string ccy, double initcashbalance, string securityid, double initinstrumentbalance, double securitysecmarketbestbid, double securitysecmarketbestask, double securitysecmarketbestbidqty, double securitysecmarketbestaskqty,double orderqty) {
         _ccy=ccy;
 	_securityid=securityid;
 	_initcashbalance=initcashbalance;
@@ -36,6 +37,7 @@ public:
         _securitysecmarketbestbidqty=securitysecmarketbestbidqty;
         _securitysecmarketbestaskqty=securitysecmarketbestaskqty;
 	_initinstrumentsecmarketprice=(securitysecmarketbestbid+securitysecmarketbestask)/2;
+	_orderqty=orderqty;
 	_pk = new PositionKeeper(_ccy,_initcashbalance,_securityid,_initinstrumentbalance);
      }
      ~SimpleMMTradingStrategy() {
@@ -58,7 +60,7 @@ public:
      double securitysecmarketbestaskqty() { return _securitysecmarketbestaskqty; }
      double cashbalance() { return _pk->cashbalance(); }
      double instrumentbalance() { return _pk->instrumentbalance(); }
-
+     double orderqty() { return _orderqty; }
      void onOrderAdd(OrderBook& orderBook, const OrderInfo& orderInfo) {
         //TODO
 
