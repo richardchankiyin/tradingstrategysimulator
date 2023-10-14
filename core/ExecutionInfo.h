@@ -35,9 +35,6 @@ public:
     ExecutionReport buyexec() { return _buyexec; }
     ExecutionReport sellexec() { return _sellexec; }
     ~ExecutionInfo() { cout << "ExecutionInfo Destructor: " << this << endl; }
-    // to be removed 
-    //ExecutionReport* buyexec2() { return _buyexec2; } 
-    //ExecutionReport* sellexec2() { return _sellexec2; }
     void setbuyexec(ExecutionReport*); 
     void setsellexec(ExecutionReport*); 
    
@@ -53,13 +50,3 @@ ExecutionInfo::ExecutionInfo(string execid,string symbol,double price,double qty
     _sellexec = ExecutionReport(sellexec);
     _exectime=exectime;
 };
-
-//to be removed
-/*
-void ExecutionInfo::setbuyexec(ExecutionReport* b) {
-    _buyexec2 = b;
-};
-void ExecutionInfo::setsellexec(ExecutionReport* s) {
-    _sellexec2 = s;
-};
-*/

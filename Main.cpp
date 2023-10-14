@@ -2,16 +2,34 @@
 #include <map>
 #include <deque>
 #include <vector>
+
 #ifndef ORDERINFO_INCL_H
 #define ORDERINFO_INCL_H
-#include "OrderInfo.h"
+#include "core/OrderInfo.h"
 #endif
-#include "ExecutionInfo.h"
+
+#ifndef EXECUTIONINFO_INCL_H
+#define EXECUTIONINFO_INCL_H
+#include "core/ExecutionInfo.h"
+#endif
+
 #ifndef EXECUTIONREPORT_INCL_H
 #define EXECUTIONREPORT_INCL_H
-#include "ExecutionReport.h"
+#include "core/ExecutionReport.h"
 #endif
-#include "OrderBookImpl.h"
+
+
+#ifndef POSITIONKEEPER_INCL_H
+#define POSITIONKEEPER_INCL_H
+#include "core/PositionKeeper.h"
+#endif
+
+
+#ifndef ORDERBOOKIMPL_INCL_H
+#define ORDERBOOKIMPL_INCL_H
+#include "core/OrderBookImpl.h"
+#endif
+
 using namespace std;
 
 struct kv {
@@ -81,5 +99,13 @@ int main() {
    cout << "Order 4 before: " << o4.orderid() << " cumqty: "<< o4.cumqty() << endl;
    o4.cumqty(110);
    cout << "Order 4 after: " << o4.orderid() << " cumqty: "<< o4.cumqty() << endl;
+
+   PositionKeeper pk = PositionKeeper("USD",1000000.0,"TSLA.US",0);
+   cout << "PK Init" <<  pk.ccy() << "," << pk.cashbalance() << "," << pk.securityid() << "," << pk.instrumentbalance() << endl;
+   pk.addcash(20000);
+   cout << "PK Added Cash" <<  pk.ccy() << "," << pk.cashbalance() << "," << pk.securityid() << "," << pk.instrumentbalance() << endl;
+   pk.addinstrument(100);
+   cout << "PK Added Instrument" <<  pk.ccy() << "," << pk.cashbalance() << "," << pk.securityid() << "," << pk.instrumentbalance() << endl;
+
    return 0;
 }
