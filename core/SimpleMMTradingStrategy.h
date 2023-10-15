@@ -1,5 +1,6 @@
 #include <iostream>
 #include <tuple>
+#include <map>
 using namespace std;
 
 #ifndef TRADINGSTRATEGY_INCL_H
@@ -15,6 +16,11 @@ using namespace std;
 #ifndef UTILS_INCL_H
 #define UTILS_INCL_H
 #include "Utils.h"
+#endif
+
+#ifndef CLOCK_INCL_H
+#define CLOCK_INCL_H
+#include "Clock.h"
 #endif
 
 /**
@@ -67,6 +73,8 @@ private:
      double _orderqtymargin;
      bool _ismminprogress;
      unsigned int _ordercreated;
+     map<unsigned int,OrderInfo> _orderstored;
+     Clock* _clock;
      PositionKeeper* _pk;
 
      /*
@@ -142,7 +150,7 @@ private:
 		double instbalance = _pk->instrumentbalance();
 		bool isshortsell = _orderqty > instbalance;
 		OrderInfo sellprimaryorder = OrderInfo(_id,nextorderid(),_symbol,'D',_orderqty,isshortsell ? '5' : '2', currenttime());
-
+		_orderstored.insert({++_ordercreated,sellprimaryorder});
 	    } else {
                 tuple<bool,double,double> sellsecbuyprimaryassess = isSellSecondaryBuyPrimaryFeasible(orderBook);
 		if (get<0>(sellsecbuyprimaryassess)) {
@@ -162,7 +170,7 @@ private:
 
 
 public:
-     SimpleMMTradingStrategy(string id,string ccy, double initcashbalance, string symbol, double initinstrumentbalance, double securitysecmarketbestbid, double securitysecmarketbestask, double securitysecmarketbestbidqty, double securitysecmarketbestaskqty,double orderqty,double pricemargin,double orderqtymargin) {
+     SimpleMMTradingStrategy(string id,string ccy, double initcashbalance, string symbol, double initinstrumentbalance, double securitysecmarketbestbid, double securitysecmarketbestask, double securitysecmarketbestbidqty, double securitysecmarketbestaskqty,double orderqty,double pricemargin,double orderqtymargin,Clock* clock) {
         _id=id;
         _ccy=ccy;
 	_symbol=symbol;
@@ -178,6 +186,7 @@ public:
 	_orderqtymargin=orderqtymargin;
 	_ismminprogress=0;
 	_ordercreated=0;
+	_clock=clock;
 	_pk = new PositionKeeper(_ccy,_initcashbalance,_symbol,_initinstrumentbalance);
      }
      ~SimpleMMTradingStrategy() {
@@ -208,7 +217,8 @@ public:
      unsigned int ordercreated() { return _ordercreated; }
      bool isorderbookrelevant(OrderBook& orderBook) { return _symbol == orderBook.symbol(); }
      string nextorderid() { return _id.append("_ORD_").append(to_string(_ordercreated + 1)); }
-     time_t currenttime() { return time(0); }
+     time_t currenttime() { return _clock == nullptr ? time(0) : _clock->currenttime(); }
+     OrderInfo outstandingorder() { return _ismminprogress ? _orderstored.find(_ordercreated)->second : OrderInfo(); }
      double bufferredorderqty() {
          return _orderqty * (1+_orderqtymargin); 
      }  

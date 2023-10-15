@@ -4,6 +4,7 @@ using namespace std;
 
 class OrderInfo {
   private:
+    bool _isdummy;
     // equivalent to fix tag 49
     string _senderid;
     // equivalent to fix tag 37
@@ -28,7 +29,7 @@ class OrderInfo {
     double _lastqty;
 
   public:
-    OrderInfo() {}
+    OrderInfo() { _isdummy = 1; }
     OrderInfo(string,string,string,char,double,char,time_t);//market order constructor
     OrderInfo(string,string,string,char,double,double,char,time_t);//limit order constructor
     OrderInfo(string,string,time_t);//cancel order constructor
@@ -41,7 +42,7 @@ class OrderInfo {
     double price() { return _price; }
     char side() { return _side; }
     time_t transacttime() { return _transacttime; }
-    
+    bool  isdummy() { return _isdummy; }
     double cumqty() { return _cumqty; }
     double lastqty() { return _lastqty; }
     void lastqty(double lastqty) { _lastqty = lastqty; _cumqty += _lastqty; } 
@@ -51,6 +52,7 @@ class OrderInfo {
 };
 
 OrderInfo::OrderInfo(string senderid,string orderid,string symbol,char msgtype,double orderqty,char side,time_t transacttime=time(0)) {
+    _isdummy = 0;
     _senderid=senderid; 
     _orderid=orderid;
     _symbol=symbol;
@@ -63,6 +65,7 @@ OrderInfo::OrderInfo(string senderid,string orderid,string symbol,char msgtype,d
 }
 
 OrderInfo::OrderInfo(string senderid,string orderid,string symbol,char msgtype,double orderqty,double price,char side,time_t transacttime=time(0)) {
+    _isdummy = 0; 
     _senderid=senderid;
     _orderid=orderid;
     _symbol=symbol;

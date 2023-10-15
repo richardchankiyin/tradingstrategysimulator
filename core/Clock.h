@@ -11,6 +11,7 @@ private:
 public:
     Clock() { _base=(intmax_t)time(0); }
     Clock(unsigned int base) { _base = base;}
+    ~Clock() { cerr << "Clock Destructor " << this << endl; }
     time_t currenttime() { 
        if (ismanipulated) {
           time_t base = _base;

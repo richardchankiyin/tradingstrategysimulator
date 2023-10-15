@@ -9,6 +9,10 @@
 #endif
 
 #include "../core/SimpleMMTradingStrategy.h"
+#ifndef CLOCK_INCL_H
+#define CLOCK_INCL_H
+#include "../core/Clock.h"
+#endif
 
 using namespace std;
 
@@ -38,7 +42,8 @@ public:
 };
 
 DEFINE_TEST(SimpleMMTradingStrategyInit) {
-   SimpleMMTradingStrategy ts = SimpleMMTradingStrategy("ID1","USD", 1000000, "TSLA.US", 0, 220, 225, 10000, 30000, 100, 0.01, 0.3);
+   Clock c;
+   SimpleMMTradingStrategy ts = SimpleMMTradingStrategy("ID1","USD", 1000000, "TSLA.US", 0, 220, 225, 10000, 30000, 100, 0.01, 0.3, &c);
    TEST("ID1"==ts.id());
    TEST("USD"==ts.ccy());
    TEST("TSLA.US"==ts.symbol());
@@ -67,7 +72,8 @@ DEFINE_TEST(SimpleMMTradingStrategyInit) {
 
 
 DEFINE_TEST(SimpleMMTradingStrategyUpdateSecMarket) {
-   SimpleMMTradingStrategy ts = SimpleMMTradingStrategy("ID2","USD", 1000000, "TSLA.US", 0, 220, 225, 10000, 30000, 100, 0.01, 0.3);
+   Clock c;
+   SimpleMMTradingStrategy ts = SimpleMMTradingStrategy("ID2","USD", 1000000, "TSLA.US", 0, 220, 225, 10000, 30000, 100, 0.01, 0.3, &c);
    ts.setsecmarket(218, 220, 2000, 4000);
    TEST(218==ts.securitysecmarketbestbid());
    TEST(2000==ts.securitysecmarketbestbidqty());

@@ -8,6 +8,7 @@ using namespace std;
 DEFINE_TEST(OrderInfoMarketOrderNewOrderSingleInit) {
    time_t t=time(0);
    OrderInfo oi = OrderInfo("senderid1","1111","TSLA.US",'D',1000,'1',t);
+   TEST(0==oi.isdummy());
    TEST("senderid1"==oi.senderid());
    TEST("1111"==oi.orderid());
    TEST("TSLA.US"==oi.symbol());
@@ -21,6 +22,7 @@ DEFINE_TEST(OrderInfoMarketOrderNewOrderSingleInit) {
 DEFINE_TEST(OrderInfoLimitOrderNewOrderSingleInit) {
    time_t t=time(0);
    OrderInfo oi = OrderInfo("senderid1","1111","TSLA.US",'D',1000,225.3,'1',t);
+   TEST(0==oi.isdummy());
    TEST("senderid1"==oi.senderid());
    TEST("1111"==oi.orderid());
    TEST("TSLA.US"==oi.symbol());
@@ -35,10 +37,16 @@ DEFINE_TEST(OrderInfoLimitOrderNewOrderSingleInit) {
 DEFINE_TEST(OrderInfoCancelOrderInit) {
    time_t t=time(0);
    OrderInfo oi = OrderInfo("senderid1","1111",t);
+   TEST(0==oi.isdummy());
    TEST("senderid1"==oi.senderid());
    TEST("1111"==oi.orderid());
    TEST('G'==oi.msgtype());
    TEST(t==oi.transacttime());
+}
+
+DEFINE_TEST(OrderInfoDummyOrderInit) {
+   OrderInfo oi;
+   TEST(1==oi.isdummy());
 }
 
 DEFINE_TEST(OrderInfoQtyCalc) {
