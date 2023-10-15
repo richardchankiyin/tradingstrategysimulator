@@ -294,5 +294,9 @@ public:
 	}
         orderBook.receiveorder(orderInfo);
      }
+     void onMarketDataChange(OrderBook& orderBook, double secmarketbestbid, double secmarketbestbidqty, double secmarketbestask, double secmarketbestaskqty) {
+	setsecmarket(secmarketbestbid,secmarketbestask,secmarketbestbidqty,secmarketbestaskqty);
+        onStrategyCheck(orderBook);
+     }
 
 };

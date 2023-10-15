@@ -129,6 +129,7 @@ DEFINE_TEST(SimpleMMTradingStrategyUpdateSecMarket) {
    TEST(4000==ts.securitysecmarketbestaskqty());
 }
 
+
 DEFINE_TEST(SimpleMMTradingStrategyOnExecutionIrrelevantSymNoStrategyTriggered) {
    Clock c = Clock(1697373408);
    c.manipulate(1);
