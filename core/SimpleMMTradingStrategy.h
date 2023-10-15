@@ -145,7 +145,6 @@ private:
             tuple<bool,double,double> buysecsellprimaryassess = isBuySecondarySellPrimaryFeasible(orderBook);
             if (get<0>(buysecsellprimaryassess)) {
                 cout << "preparing to buy secondary and sell primary..." << endl; 
-		//TODO to be implemented
 		double instbalance = _pk->instrumentbalance();
 		bool isshortsell = _orderqty > instbalance;
 		double buysecondaryprice = get<1>(buysecsellprimaryassess);
@@ -157,15 +156,35 @@ private:
 		_orderstored.insert({++_ordercreated,{buysecondaryorder,sellprimaryorder}});
 		// for sell order first deduct instrument balance and wait for execution to add cash balance back
 		_pk->addinstrument(-1 * _orderqty);
+		// set is_mminprogress as truea
+		_ismminprogress = 1;
 		// send sellprimaryorder out
 		onSendOrder(orderBook,sellprimaryorder);
 	    } else {
                 tuple<bool,double,double> sellsecbuyprimaryassess = isSellSecondaryBuyPrimaryFeasible(orderBook);
 		if (get<0>(sellsecbuyprimaryassess)) {
-                   cout << "prepareing to sell secondary and buy primary..." << endl; 
-		   //TODO to be implemented
-		   
-		   
+                   cout << "preparing to sell secondary and buy primary..." << endl; 
+		   double cbalance = _pk->cashbalance();
+		   double sellsecondaryprice = get<1>(sellsecbuyprimaryassess);
+		   double buyprimaryprice = get<2>(sellsecbuyprimaryassess);
+		   double buyprimarynominal = buyprimaryprice * _orderqty;
+		   if (buyprimarynominal > cbalance) {
+                       // not enough buying power not proceed
+                       cout << "warning!!!buyprimarynominal:" << buyprimarynominal << "> cashbalance:" << cbalance << endl;
+		   } else {
+		       string buyprimaryorderid = nextorderid();
+		       string sellsecondaryorderid = buyprimaryorderid.append("_SEC");
+		       OrderInfo buyprimaryorder = OrderInfo(_id,buyprimaryorderid,_symbol,'D',_orderqty,buyprimaryprice,'1', currenttime());
+		       OrderInfo sellsecondaryorder = OrderInfo(_id,sellsecondaryorderid,_symbol,'D',_orderqty,sellsecondaryprice,'2',currenttime());
+		       _orderstored.insert({++_ordercreated,{sellsecondaryorder,buyprimaryorder}});
+
+		       // for buy order first deduct cash balance and wait for execution to add instrument balance back
+		       _pk->addcash(-1 * buyprimarynominal);
+		       // set is_mminprogress as truea
+		       _ismminprogress = 1;
+		       // send sellprimaryorder out
+		       onSendOrder(orderBook,buyprimaryorder);
+		   }
                 } else {
                    //nothing happen 
 		}

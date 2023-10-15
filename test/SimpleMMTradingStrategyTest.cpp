@@ -47,6 +47,7 @@ private:
       string _symbol;
       double _bestbid = 0.0;
       double _bestask = 0.0;
+      OrderInfo _orderinforeceived; 
       std::vector<std::pair<double,vector<OrderInfo>>> _bidqueue = initbidqueue();
       std::vector<std::pair<double,vector<OrderInfo>>> _askqueue = initaskqueue();
 
@@ -74,6 +75,10 @@ public:
           vector<pair<double,vector<OrderInfo>>> r={p};
           return r;
       }
+      void receiveorder(const OrderInfo& orderInfo) {
+          _orderinforeceived = orderInfo;
+      }
+      OrderInfo orderinforeceived() { return _orderinforeceived; }
       OrderBookSimpleMMTSLocalGeneric(string symbol) {_symbol=symbol;}
       ~OrderBookSimpleMMTSLocalGeneric() { cerr << "OrderBookSimpleMMTSLocalGeneric Destructor:" << this << endl; }
 };
@@ -172,6 +177,30 @@ DEFINE_TEST(SimpleMMTradingStrategyOnExecutionPrimaryBidSlightHigherThanSecondar
    ob.askqueue({{225.3,{genOrderInfo(10000,225.3,'2')}},{225.4,{genOrderInfo(10000,225.4,'2')}},{225.5,{genOrderInfo(10000,225.5,'1')}}});
    ts.onOrderExecution(ob,oi,ei);
    TEST(0==ts.ismminprogress());
+
+}
+
+DEFINE_TEST(SimpleMMTradingStrategyOnExecutionPrimaryBidtHigherThanSecondaryAskStrategyTriggered) {
+   Clock c = Clock(1697373408);
+   c.manipulate(1);
+   SimpleMMTradingStrategy ts = SimpleMMTradingStrategy("ID1","USD", 1000000, "TSLA.US", 0, 224.8, 225, 10000, 30000, 100, 0.01, 0.3, &c);
+   OrderBookSimpleMMTSLocalGeneric ob = OrderBookSimpleMMTSLocalGeneric("TSLA.US");
+   ob.bestbid(228.1);
+   ob.bestask(228.3);
+   OrderInfo oi;
+   ExecutionInfo ei;
+   ob.bidqueue({{228.1,{genOrderInfo(10000,228.1,'1')}},{228.2,{genOrderInfo(10000,228.2,'1')}},{228.3,{genOrderInfo(10000,228.3,'1')}}});
+   ob.askqueue({{228.3,{genOrderInfo(10000,228.3,'2')}},{228.4,{genOrderInfo(10000,228.4,'2')}},{228.5,{genOrderInfo(10000,228.5,'1')}}});
+
+   ts.onOrderExecution(ob,oi,ei);
+   TEST(1==ts.ismminprogress());
+   TEST(-100==ts.instrumentbalance());
+   TEST(1==ts.ordercreated());
+   OrderInfo ordersent = ob.orderinforeceived();
+   TEST("TSLA.US"==ordersent.symbol()); 
+   TEST(228.1==ordersent.price());
+   TEST(100==ordersent.orderqty());
+   TEST('5'==ordersent.side());
 
 }
 
