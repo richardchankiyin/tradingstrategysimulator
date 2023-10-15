@@ -63,6 +63,7 @@ DEFINE_TEST(SimpleMMTradingStrategyInit) {
    TEST(0==ts.ordercreated());
    TEST("ID1_ORD_1"==ts.nextorderid()); 
    TEST(100*1.3==ts.bufferredorderqty());
+   TEST(1==ts.outstandingorder().isdummy());
    OrderBookSimpleMMTSLocal ob1 = OrderBookSimpleMMTSLocal("TSLA.US");
    OrderBookSimpleMMTSLocal ob2 = OrderBookSimpleMMTSLocal("MSFT.US");
    TEST(1==ts.isorderbookrelevant(ob1));
