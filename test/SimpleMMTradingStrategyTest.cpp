@@ -41,6 +41,41 @@ public:
       ~OrderBookSimpleMMTSLocal() { cerr << "OrderBookSimpleMMTSLocal Destructor:" << this << endl; }
 };
 
+
+class OrderBookSimpleMMTSLocalGeneric:public OrderBook {
+private:
+      string _symbol;
+      double _bestbid = 0.0;
+      double _bestask = 0.0;
+      std::vector<std::pair<double,vector<OrderInfo>>> _bidqueue = initbidqueue();
+      std::vector<std::pair<double,vector<OrderInfo>>> _askqueue = initaskqueue();
+
+public:
+      string symbol() { return _symbol; }
+      double bestbid() { return _bestbid; }
+      double bestask() { return _bestask; }
+      void bestbid(double bid) { _bestbid = bid; }
+      void bestask(double ask) { _bestask = ask; } 
+      std::vector<std::pair<double,vector<OrderInfo>>> bidqueue() { return _bidqueue; }
+      std::vector<std::pair<double,vector<OrderInfo>>> askqueue() { return _askqueue; }
+      std::vector<std::pair<double,vector<OrderInfo>>> initbidqueue() { 
+          OrderInfo oi;
+          std::vector<OrderInfo> v = {oi};
+          std::pair<double,std::vector<OrderInfo>> p=pair(10.0,v);
+          vector<pair<double,vector<OrderInfo>>> r={p};
+          return r;
+      }
+      std::vector<std::pair<double,vector<OrderInfo>>> initaskqueue() { 
+          OrderInfo oi;
+          std::vector<OrderInfo> v = {oi};
+          std::pair<double,std::vector<OrderInfo>> p=pair(10.0,v);
+          vector<pair<double,vector<OrderInfo>>> r={p};
+          return r;
+      }
+      OrderBookSimpleMMTSLocalGeneric(string symbol) {_symbol=symbol;}
+      ~OrderBookSimpleMMTSLocalGeneric() { cerr << "OrderBookSimpleMMTSLocalGeneric Destructor:" << this << endl; }
+};
+
 DEFINE_TEST(SimpleMMTradingStrategyInit) {
    Clock c;
    SimpleMMTradingStrategy ts = SimpleMMTradingStrategy("ID1","USD", 1000000, "TSLA.US", 0, 220, 225, 10000, 30000, 100, 0.01, 0.3, &c);

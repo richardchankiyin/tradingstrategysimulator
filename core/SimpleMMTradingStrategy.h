@@ -43,7 +43,6 @@ using namespace std;
       - update positionkeeper
 
   - else (assuming partially filled/new)
-      - capture order add
       - capture outstanding qty
       - send cancel order on this order add
       - on order cancel 
@@ -73,7 +72,7 @@ private:
      double _orderqtymargin;
      bool _ismminprogress;
      unsigned int _ordercreated;
-     map<unsigned int,OrderInfo> _orderstored;
+     map<unsigned int,pair<OrderInfo,OrderInfo>> _orderstored;
      Clock* _clock;
      PositionKeeper* _pk;
 
@@ -149,8 +148,17 @@ private:
 		//TODO to be implemented
 		double instbalance = _pk->instrumentbalance();
 		bool isshortsell = _orderqty > instbalance;
-		OrderInfo sellprimaryorder = OrderInfo(_id,nextorderid(),_symbol,'D',_orderqty,isshortsell ? '5' : '2', currenttime());
-		_orderstored.insert({++_ordercreated,sellprimaryorder});
+		double buysecondaryprice = get<1>(buysecsellprimaryassess);
+		double sellprimaryprice = get<2>(buysecsellprimaryassess);
+		string sellprimaryorderid = nextorderid();
+		string buysecondaryorderid = sellprimaryorderid.append("_SEC");
+		OrderInfo sellprimaryorder = OrderInfo(_id,sellprimaryorderid,_symbol,'D',_orderqty,sellprimaryprice,isshortsell ? '5' : '2', currenttime());
+		OrderInfo buysecondaryorder = OrderInfo(_id,buysecondaryorderid,_symbol,'D',_orderqty,buysecondaryprice,'1',currenttime());
+		_orderstored.insert({++_ordercreated,{buysecondaryorder,sellprimaryorder}});
+		// for sell order first deduct instrument balance and wait for execution to add cash balance back
+		_pk->addinstrument(-1 * _orderqty);
+		// send sellprimaryorder out
+		onSendOrder(orderBook,sellprimaryorder);
 	    } else {
                 tuple<bool,double,double> sellsecbuyprimaryassess = isSellSecondaryBuyPrimaryFeasible(orderBook);
 		if (get<0>(sellsecbuyprimaryassess)) {
@@ -218,25 +226,35 @@ public:
      bool isorderbookrelevant(OrderBook& orderBook) { return _symbol == orderBook.symbol(); }
      string nextorderid() { return _id.append("_ORD_").append(to_string(_ordercreated + 1)); }
      time_t currenttime() { return _clock == nullptr ? time(0) : _clock->currenttime(); }
-     OrderInfo outstandingorder() { return _ismminprogress ? _orderstored.find(_ordercreated)->second : OrderInfo(); }
+     OrderInfo outstandingorder() { return _ismminprogress ? _orderstored.find(_ordercreated)->second.second : OrderInfo(); }
      double bufferredorderqty() {
          return _orderqty * (1+_orderqtymargin); 
      }  
      void onOrderAdd(OrderBook& orderBook, const OrderInfo& orderInfo) {
-        //TODO
-
+	// no special handling for market execption handling, just need to trigger strategy check
+	 onStrategyCheck(orderBook);
      }
      void onOrderCancel(OrderBook& orderBook, const OrderInfo& orderInfo) {
-        //TODO
+        if (_ismminprogress) {
+            // pending order cancel to come back for trading strategy market exception handling
+            //TODO
+	}
 
+        // perform strategy checking	
+        onStrategyCheck(orderBook);
      }
      void onOrderExecution(OrderBook& orderBook, const OrderInfo& orderInfo, const ExecutionInfo& executionInfo) {
-        //TODO
+        if (_ismminprogress) {
+            // pending execution report to coming for second market leg handling, PK balance update and other post trade processes
+            //TODO
+	}
 
+        // perform strategy checking	
+        onStrategyCheck(orderBook);
+	
      }
      void onSendOrder(OrderBook& orderBook, const OrderInfo& orderInfo) {
-        //TODO
-
+        orderBook.receiveorder(orderInfo);
      }
 
 };
