@@ -23,6 +23,7 @@ DEFINE_TEST(SimpleMMTradingStrategyInit) {
    TEST(100==ts.orderqty());
    TEST(0.01==ts.pricemargin());
    TEST(0.3==ts.orderqtymargin());
+   TEST(0==ts.ismminprogress());
 }
 
 

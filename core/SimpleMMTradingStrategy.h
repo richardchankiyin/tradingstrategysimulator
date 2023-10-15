@@ -11,6 +11,11 @@ using namespace std;
 #include "PositionKeeper.h"
 #endif
 
+#ifndef UTILS_INCL_H
+#define UTILS_INCL_H
+#include "Utils.h"
+#endif
+
 class SimpleMMTradingStrategy: public TradingStrategy {
 private:
      string _symbol;
@@ -25,7 +30,7 @@ private:
      double _orderqty;
      double _pricemargin;
      double _orderqtymargin;
-
+     bool _ismminprogress;
      PositionKeeper* _pk;
 
      /*
@@ -54,6 +59,7 @@ public:
 	_orderqty=orderqty;
 	_pricemargin=pricemargin;
 	_orderqtymargin=orderqtymargin;
+	_ismminprogress=0;
 	_pk = new PositionKeeper(_ccy,_initcashbalance,_symbol,_initinstrumentbalance);
      }
      ~SimpleMMTradingStrategy() {
@@ -79,6 +85,7 @@ public:
      double orderqty() { return _orderqty; }
      double pricemargin() { return _pricemargin; }
      double orderqtymargin() { return _orderqtymargin; }
+     bool ismminprogress() { return _ismminprogress; }
      void onOrderAdd(OrderBook& orderBook, const OrderInfo& orderInfo) {
         //TODO
 
