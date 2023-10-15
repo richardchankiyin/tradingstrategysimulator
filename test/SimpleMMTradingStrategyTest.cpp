@@ -224,6 +224,30 @@ DEFINE_TEST(SimpleMMTradingStrategyOnExecutionPrimaryAskSlightltLowerThanSeconda
 }
 
 
+DEFINE_TEST(SimpleMMTradingStrategyOnExecutionPrimaryAskLowerThanSecondaryBidStrategyTriggered) {
+   Clock c = Clock(1697373408);
+   c.manipulate(1);
+   SimpleMMTradingStrategy ts = SimpleMMTradingStrategy("ID1","USD", 1000000, "TSLA.US", 0, 233.1, 233.3, 10000, 30000, 100, 0.01, 0.3, &c);
+   OrderBookSimpleMMTSLocalGeneric ob = OrderBookSimpleMMTSLocalGeneric("TSLA.US");
+   ob.bestbid(228.1);
+   ob.bestask(228.3);
+   OrderInfo oi;
+   ExecutionInfo ei;
+   ob.bidqueue({{228.1,{genOrderInfo(10000,228.1,'1')}},{228.2,{genOrderInfo(10000,228.2,'1')}},{228.3,{genOrderInfo(10000,228.3,'1')}}});
+   ob.askqueue({{228.3,{genOrderInfo(10000,228.3,'2')}},{228.4,{genOrderInfo(10000,228.4,'2')}},{228.5,{genOrderInfo(10000,228.5,'1')}}});
+
+   ts.onOrderExecution(ob,oi,ei);
+   TEST(1==ts.ismminprogress());
+   TEST((1000000-228.3*100)==ts.cashbalance());
+   TEST(1==ts.ordercreated());
+   OrderInfo ordersent = ob.orderinforeceived();
+   TEST("TSLA.US"==ordersent.symbol()); 
+   TEST(228.3==ordersent.price());
+   TEST(100==ordersent.orderqty());
+   TEST('1'==ordersent.side());
+
+   //TODO PK update, rollback is_mminprogress and measure the increment of cash balance 
+}
 
 
 int main()
