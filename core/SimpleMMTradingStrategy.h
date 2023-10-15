@@ -276,6 +276,12 @@ public:
         if (_ismminprogress) {
             // pending execution report to coming for second market leg handling, PK balance update and other post trade processes
             //TODO
+	    OrderInfo outstandingprimaryorder = outstandingorder();
+	    OrderInfo incomingorder = orderInfo;
+	    if (incomingorder.orderid() == outstandingprimaryorder.orderid()) {
+                // match outstanding, proceed to check status
+	    }
+	    
 	}
 
         // perform strategy checking	
