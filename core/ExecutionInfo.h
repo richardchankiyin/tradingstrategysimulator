@@ -25,6 +25,7 @@ private:
     time_t _exectime;
 
 public:
+    ExecutionInfo() {}
     ExecutionInfo(string,string,double,double,char,ExecutionReport,ExecutionReport,time_t);
     string execid() { return _execid; }
     string symbol() { return _symbol; }

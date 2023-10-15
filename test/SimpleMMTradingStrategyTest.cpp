@@ -58,6 +58,8 @@ public:
       void bestask(double ask) { _bestask = ask; } 
       std::vector<std::pair<double,vector<OrderInfo>>> bidqueue() { return _bidqueue; }
       std::vector<std::pair<double,vector<OrderInfo>>> askqueue() { return _askqueue; }
+      void bidqueue(std::vector<std::pair<double,vector<OrderInfo>>> q) {_bidqueue=q;}
+      void askqueue(std::vector<std::pair<double,vector<OrderInfo>>> q) {_askqueue=q;}
       std::vector<std::pair<double,vector<OrderInfo>>> initbidqueue() { 
           OrderInfo oi;
           std::vector<OrderInfo> v = {oi};
@@ -117,6 +119,21 @@ DEFINE_TEST(SimpleMMTradingStrategyUpdateSecMarket) {
    TEST(4000==ts.securitysecmarketbestaskqty());
 }
 
+DEFINE_TEST(SimpleMMTradingStrategyOnExecutionIrrelevantSymNoStrategyTriggered) {
+   Clock c = Clock(1697373408);
+   c.manipulate(1);
+   SimpleMMTradingStrategy ts = SimpleMMTradingStrategy("ID1","USD", 1000000, "TSLA.US", 0, 220, 225, 10000, 30000, 100, 0.01, 0.3, &c);
+   OrderBookSimpleMMTSLocalGeneric ob = OrderBookSimpleMMTSLocalGeneric("MSFT.US");
+   ob.bestbid(220);
+   ob.bestask(225);
+   OrderInfo oi;
+   ExecutionInfo ei;
+   ob.bidqueue({{220,{oi}},{219,{oi}},{218,{oi}}});
+   ob.askqueue({{225,{oi}},{226,{oi}},{227,{oi}}});
+
+   ts.onOrderExecution(ob,oi,ei);
+   TEST(0==ts.ismminprogress());
+}
 
 int main()
 {

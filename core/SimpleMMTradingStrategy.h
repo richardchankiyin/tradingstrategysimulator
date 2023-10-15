@@ -140,7 +140,7 @@ private:
 
      void onStrategyCheck(OrderBook& orderBook) {
         if (_ismminprogress) {
-                cout << "ismminprogress...skip" << endl;
+                cerr << "ismminprogress...skip" << endl;
 	} else {
             tuple<bool,double,double> buysecsellprimaryassess = isBuySecondarySellPrimaryFeasible(orderBook);
             if (get<0>(buysecsellprimaryassess)) {
@@ -231,10 +231,16 @@ public:
          return _orderqty * (1+_orderqtymargin); 
      }  
      void onOrderAdd(OrderBook& orderBook, const OrderInfo& orderInfo) {
+        if (!isorderbookrelevant(orderBook)) {
+             return ;
+	}
 	// no special handling for market execption handling, just need to trigger strategy check
 	 onStrategyCheck(orderBook);
      }
      void onOrderCancel(OrderBook& orderBook, const OrderInfo& orderInfo) {
+        if (!isorderbookrelevant(orderBook)) {
+             return ;
+	}
         if (_ismminprogress) {
             // pending order cancel to come back for trading strategy market exception handling
             //TODO
@@ -244,6 +250,10 @@ public:
         onStrategyCheck(orderBook);
      }
      void onOrderExecution(OrderBook& orderBook, const OrderInfo& orderInfo, const ExecutionInfo& executionInfo) {
+        if (!isorderbookrelevant(orderBook)) {
+             return ;
+	}
+        cerr << "onOrderExecution triggered......" << endl;
         if (_ismminprogress) {
             // pending execution report to coming for second market leg handling, PK balance update and other post trade processes
             //TODO
@@ -254,6 +264,9 @@ public:
 	
      }
      void onSendOrder(OrderBook& orderBook, const OrderInfo& orderInfo) {
+        if (!isorderbookrelevant(orderBook)) {
+             return ;
+	}
         orderBook.receiveorder(orderInfo);
      }
 
