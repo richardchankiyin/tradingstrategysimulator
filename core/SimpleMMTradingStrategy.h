@@ -24,7 +24,14 @@ private:
      double _securitysecmarketbestaskqty;
      double _orderqty;
 
-     PositionKeeper* _pk;  
+     PositionKeeper* _pk;
+     bool isBuySecondaySellPrimaryPotential(OrderBook& orderBook) {
+        return orderBook.bestbid() > _securitysecmarketbestask;
+     }
+     bool isSellSecondaryBuyPrimaryPotential(OrderBook& orderBook) {
+        return _securitysecmarketbestbid > orderBook.bestask();
+     }  
+	     
 
 public:
      SimpleMMTradingStrategy(string ccy, double initcashbalance, string symbol, double initinstrumentbalance, double securitysecmarketbestbid, double securitysecmarketbestask, double securitysecmarketbestbidqty, double securitysecmarketbestaskqty,double orderqty) {
