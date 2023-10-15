@@ -23,8 +23,15 @@ private:
      double _securitysecmarketbestbidqty;
      double _securitysecmarketbestaskqty;
      double _orderqty;
+     double _pricemargin;
+     double _orderqtymargin;
 
      PositionKeeper* _pk;
+
+     /*
+      * These two functions are for initial checking for 
+      * further market making checking
+      */
      bool isBuySecondaySellPrimaryPotential(OrderBook& orderBook) {
         return orderBook.bestbid() > _securitysecmarketbestask;
      }
@@ -34,7 +41,7 @@ private:
 	     
 
 public:
-     SimpleMMTradingStrategy(string ccy, double initcashbalance, string symbol, double initinstrumentbalance, double securitysecmarketbestbid, double securitysecmarketbestask, double securitysecmarketbestbidqty, double securitysecmarketbestaskqty,double orderqty) {
+     SimpleMMTradingStrategy(string ccy, double initcashbalance, string symbol, double initinstrumentbalance, double securitysecmarketbestbid, double securitysecmarketbestask, double securitysecmarketbestbidqty, double securitysecmarketbestaskqty,double orderqty,double pricemargin,double orderqtymargin) {
         _ccy=ccy;
 	_symbol=symbol;
 	_initcashbalance=initcashbalance;
@@ -45,6 +52,8 @@ public:
         _securitysecmarketbestaskqty=securitysecmarketbestaskqty;
 	_initinstrumentsecmarketprice=(securitysecmarketbestbid+securitysecmarketbestask)/2;
 	_orderqty=orderqty;
+	_pricemargin=pricemargin;
+	_orderqtymargin=orderqtymargin;
 	_pk = new PositionKeeper(_ccy,_initcashbalance,_symbol,_initinstrumentbalance);
      }
      ~SimpleMMTradingStrategy() {
@@ -68,6 +77,8 @@ public:
      double cashbalance() { return _pk->cashbalance(); }
      double instrumentbalance() { return _pk->instrumentbalance(); }
      double orderqty() { return _orderqty; }
+     double pricemargin() { return _pricemargin; }
+     double orderqtymargin() { return _orderqtymargin; }
      void onOrderAdd(OrderBook& orderBook, const OrderInfo& orderInfo) {
         //TODO
 
