@@ -18,7 +18,7 @@ public:
           vector<pair<double,vector<OrderInfo>>> r={p};
           return r;
       }
-      std::vector<std::pair<double,vector<OrderInfo>>> sellqueue() { 
+      std::vector<std::pair<double,vector<OrderInfo>>> askqueue() { 
           OrderInfo oi;
           std::vector<OrderInfo> v = {oi};
           std::pair<double,std::vector<OrderInfo>> p=pair(10.0,v);

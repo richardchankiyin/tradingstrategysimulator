@@ -17,7 +17,7 @@ public:
     virtual double bestbid() = 0;
     virtual double bestask() = 0;
     virtual std::vector<std::pair<double,vector<OrderInfo>>> bidqueue() = 0;
-    virtual std::vector<std::pair<double,vector<OrderInfo>>> sellqueue() = 0;
+    virtual std::vector<std::pair<double,vector<OrderInfo>>> askqueue() = 0;
     virtual void acceptorder(const OrderInfo& orderInfo) {}
     virtual ~OrderBook() {}   
 };

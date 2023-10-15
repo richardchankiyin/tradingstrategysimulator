@@ -42,8 +42,59 @@ private:
      }
      bool isSellSecondaryBuyPrimaryPotential(OrderBook& orderBook) {
         return _securitysecmarketbestbid > orderBook.bestask();
-     }  
-	     
+     }
+
+
+     /**
+      * detail checking of possible MM through liquidity checking
+      * using bufferredorderqty and least favour price in secondary
+      * market
+      */     
+     bool isBuySecondarySellPrimaryFeasible(OrderBook& orderBook) {
+        if (isBuySecondaySellPrimaryPotential(orderBook)) {
+	    double boqty = bufferredorderqty();
+
+	    if (_securitysecmarketbestaskqty > boqty) {
+                 std::vector<std::pair<double,vector<OrderInfo>>> bidqueue=orderBook.bidqueue();
+                 double primaryavgprice = Utils::avgprice(bidqueue, boqty);
+		 if (primaryavgprice == -1) {
+                     //avg price cannot be determined
+		     return 0;
+		 }
+		 double secondarylfprice = Utils::leastfavourprice(_securitysecmarketbestask, 1, _pricemargin);
+		 return secondarylfprice < primaryavgprice;
+	    } else {
+                 return 0;
+	    } 
+	    return 0;
+	}
+	else {
+            return 0;
+	}	
+     }
+
+     bool isSellSecondaryBuyPrimaryFeasible(OrderBook& orderBook) {
+        if (isSellSecondaryBuyPrimaryPotential(orderBook)) {
+            double boqty = bufferredorderqty();
+
+            if (_securitysecmarketbestbidqty > boqty) {
+               std::vector<std::pair<double,vector<OrderInfo>>> askqueue=orderBook.askqueue();
+               double primaryavgprice = Utils::avgprice(askqueue, boqty);
+	       if (primaryavgprice == -1) {
+                    //avg price cannot be determined
+	            return 0;
+	       }
+	       double secondarylfprice = Utils::leastfavourprice(_securitysecmarketbestbid, 0, _pricemargin);
+	       return primaryavgprice < secondarylfprice;
+	    } else {
+               return 0;
+	    }
+
+	} else {
+            return 0;
+	}
+     }
+
 
 public:
      SimpleMMTradingStrategy(string ccy, double initcashbalance, string symbol, double initinstrumentbalance, double securitysecmarketbestbid, double securitysecmarketbestask, double securitysecmarketbestbidqty, double securitysecmarketbestaskqty,double orderqty,double pricemargin,double orderqtymargin) {
@@ -86,6 +137,9 @@ public:
      double pricemargin() { return _pricemargin; }
      double orderqtymargin() { return _orderqtymargin; }
      bool ismminprogress() { return _ismminprogress; }
+     double bufferredorderqty() {
+         return _orderqty * (1+_orderqtymargin); 
+     }  
      void onOrderAdd(OrderBook& orderBook, const OrderInfo& orderInfo) {
         //TODO
 

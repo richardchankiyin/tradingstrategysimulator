@@ -101,11 +101,11 @@ int main() {
    cout << "Order 4 after: " << o4.orderid() << " cumqty: "<< o4.cumqty() << endl;
 
    PositionKeeper pk = PositionKeeper("USD",1000000.0,"TSLA.US",0);
-   cout << "PK Init" <<  pk.ccy() << "," << pk.cashbalance() << "," << pk.securityid() << "," << pk.instrumentbalance() << endl;
+   cout << "PK Init" <<  pk.ccy() << "," << pk.cashbalance() << "," << pk.symbol() << "," << pk.instrumentbalance() << endl;
    pk.addcash(20000);
-   cout << "PK Added Cash" <<  pk.ccy() << "," << pk.cashbalance() << "," << pk.securityid() << "," << pk.instrumentbalance() << endl;
+   cout << "PK Added Cash" <<  pk.ccy() << "," << pk.cashbalance() << "," << pk.symbol() << "," << pk.instrumentbalance() << endl;
    pk.addinstrument(100);
-   cout << "PK Added Instrument" <<  pk.ccy() << "," << pk.cashbalance() << "," << pk.securityid() << "," << pk.instrumentbalance() << endl;
+   cout << "PK Added Instrument" <<  pk.ccy() << "," << pk.cashbalance() << "," << pk.symbol() << "," << pk.instrumentbalance() << endl;
 
    return 0;
 }
