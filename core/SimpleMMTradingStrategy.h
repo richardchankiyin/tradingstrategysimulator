@@ -16,6 +16,39 @@ using namespace std;
 #include "Utils.h"
 #endif
 
+/**
+ *
+ *
+ * Market Making algo on order handling
+ - send order
+  - ismminprogress -> true
+  - store orderinfo internally
+  - update positionkeeper balances
+  - pending execution/add
+  - if execution fully
+      - trade secondary market
+      - capture secondary market execution
+      - update positionkeeper balances
+      - send primary leg and secondary leg to post trade
+
+  - else if execution rejected
+      - send primary leg to post trade
+      - update positionkeeper
+
+  - else (assuming partially filled/new)
+      - capture order add
+      - capture outstanding qty
+      - send cancel order on this order add
+      - on order cancel 
+      - update positionkeeper
+      - send primary leg to post trade
+
+      
+  - remove orderinfo from internal storage
+  - ismminprogress -> false*
+ *
+ */
+
 class SimpleMMTradingStrategy: public TradingStrategy {
 private:
      string _symbol;

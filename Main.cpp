@@ -40,8 +40,8 @@ struct kv {
 int main() {
    cout << "testing" << endl;
    OrderInfo o = OrderInfo("sender1","111","TSLA.US",'D',100.0,'1');
-   ExecutionReport erbuy = ExecutionReport("222","NVDA.US","333",'2',465.2,100.0,100.0);
-   ExecutionReport ersell = ExecutionReport("444","NVDA.US","333",'2',465.2,100.0,100.0);
+   ExecutionReport erbuy = ExecutionReport("222","NVDA.US","333",'2',465.2,100,100.0,100.0,'1');
+   ExecutionReport ersell = ExecutionReport("444","NVDA.US","333",'2',465.2,100,100.0,100.0,'2');
    ExecutionInfo ei = ExecutionInfo("333","MSFT.US",330.3,10,'A',erbuy,ersell);
    cout << o.symbol() << endl;
    cout << erbuy.symbol() << endl;
