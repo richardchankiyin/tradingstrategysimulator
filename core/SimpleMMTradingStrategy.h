@@ -141,7 +141,7 @@ private:
 		//TODO to be implemented
 		double instbalance = _pk->instrumentbalance();
 		bool isshortsell = _orderqty > instbalance;
-		//OrderInfo sellprimaryorder = OrderInfo(_id,nextorderid(),_symbol
+		OrderInfo sellprimaryorder = OrderInfo(_id,nextorderid(),_symbol,'D',_orderqty,isshortsell ? '5' : '2', currenttime());
 
 	    } else {
                 tuple<bool,double,double> sellsecbuyprimaryassess = isSellSecondaryBuyPrimaryFeasible(orderBook);
@@ -208,6 +208,7 @@ public:
      unsigned int ordercreated() { return _ordercreated; }
      bool isorderbookrelevant(OrderBook& orderBook) { return _symbol == orderBook.symbol(); }
      string nextorderid() { return _id.append("_ORD_").append(to_string(_ordercreated + 1)); }
+     time_t currenttime() { return time(0); }
      double bufferredorderqty() {
          return _orderqty * (1+_orderqtymargin); 
      }  

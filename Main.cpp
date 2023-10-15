@@ -30,6 +30,11 @@
 #include "core/OrderBookImpl.h"
 #endif
 
+#ifndef CLOCK_INCL_H
+#define CLOCK_INCL_H
+#include "core/Clock.h"
+#endif
+
 using namespace std;
 
 struct kv {
@@ -107,5 +112,12 @@ int main() {
    pk.addinstrument(100);
    cout << "PK Added Instrument" <<  pk.ccy() << "," << pk.cashbalance() << "," << pk.symbol() << "," << pk.instrumentbalance() << endl;
 
+   Clock c = Clock(1697360614);
+   c.manipulate(1);
+   cout << "Manipulated time:  " << c.currenttime() << endl;
+   c.adjust(10);
+   cout << "Manipulated time:  " << c.currenttime() << endl;
+   c.manipulate(0);
+   cout << "Real time:  " << c.currenttime() << endl;
    return 0;
 }
