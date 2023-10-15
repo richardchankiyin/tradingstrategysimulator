@@ -163,7 +163,7 @@ DEFINE_TEST(SimpleMMTradingStrategyOnExecutionNoPriceDiffNoStrategyTriggered) {
 }
 
 
-DEFINE_TEST(SimpleMMTradingStrategyOnExecutionPrimaryBidSlightHigherThanSecondaryAskNoStrategyTriggered) {
+DEFINE_TEST(SimpleMMTradingStrategyOnExecutionPrimaryBidSlightlyHigherThanSecondaryAskNoStrategyTriggered) {
    Clock c = Clock(1697373408);
    c.manipulate(1);
    SimpleMMTradingStrategy ts = SimpleMMTradingStrategy("ID1","USD", 1000000, "TSLA.US", 0, 224.8, 225, 10000, 30000, 100, 0.01, 0.3, &c);
@@ -202,7 +202,29 @@ DEFINE_TEST(SimpleMMTradingStrategyOnExecutionPrimaryBidtHigherThanSecondaryAskS
    TEST(100==ordersent.orderqty());
    TEST('5'==ordersent.side());
 
+   //TODO PK update, rollback is_mminprogress and measure the increment of cash balance 
 }
+
+
+DEFINE_TEST(SimpleMMTradingStrategyOnExecutionPrimaryAskSlightltLowerThanSecondaryBidNoStrategyTriggered) {
+   Clock c = Clock(1697373408);
+   c.manipulate(1);
+   SimpleMMTradingStrategy ts = SimpleMMTradingStrategy("ID1","USD", 1000000, "TSLA.US", 0, 225.4, 225.5, 10000, 30000, 100, 0.01, 0.3, &c);
+   OrderBookSimpleMMTSLocalGeneric ob = OrderBookSimpleMMTSLocalGeneric("TSLA.US");
+   ob.bestbid(225.1);
+   ob.bestask(225.3);
+   OrderInfo oi;
+   ExecutionInfo ei;
+   
+   ob.bidqueue({{225.1,{genOrderInfo(10000,225.1,'1')}},{225.2,{genOrderInfo(10000,225.2,'1')}},{225.3,{genOrderInfo(10000,225.3,'1')}}});
+   ob.askqueue({{225.3,{genOrderInfo(10000,225.3,'2')}},{225.4,{genOrderInfo(10000,225.4,'2')}},{225.5,{genOrderInfo(10000,225.5,'1')}}});
+   ts.onOrderExecution(ob,oi,ei);
+   TEST(0==ts.ismminprogress());
+
+}
+
+
+
 
 int main()
 {
