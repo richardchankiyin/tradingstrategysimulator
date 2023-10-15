@@ -1,4 +1,5 @@
 #include <iostream>
+#include <tuple>
 using namespace std;
 
 #ifndef TRADINGSTRATEGY_INCL_H
@@ -51,6 +52,7 @@ using namespace std;
 
 class SimpleMMTradingStrategy: public TradingStrategy {
 private:
+     string _id;
      string _symbol;
      string _ccy;
      double _initcashbalance;
@@ -83,7 +85,7 @@ private:
       * using bufferredorderqty and least favour price in secondary
       * market
       */     
-     bool isBuySecondarySellPrimaryFeasible(OrderBook& orderBook) {
+     tuple<bool,double,double> isBuySecondarySellPrimaryFeasible(OrderBook& orderBook) {
         if (isBuySecondaySellPrimaryPotential(orderBook)) {
 	    double boqty = bufferredorderqty();
 
@@ -92,21 +94,21 @@ private:
                  double primaryavgprice = Utils::avgprice(bidqueue, boqty);
 		 if (primaryavgprice == -1) {
                      //avg price cannot be determined
-		     return 0;
+		     return {0,-1,-1};
 		 }
 		 double secondarylfprice = Utils::leastfavourprice(_securitysecmarketbestask, 1, _pricemargin);
-		 return secondarylfprice < primaryavgprice;
+		 return {secondarylfprice < primaryavgprice,secondarylfprice,primaryavgprice};
 	    } else {
-                 return 0;
+                 return {0,-1,-1};
 	    } 
-	    return 0;
+	    return {0,-1,-1};
 	}
 	else {
-            return 0;
+            return {0,-1,-1};
 	}	
      }
 
-     bool isSellSecondaryBuyPrimaryFeasible(OrderBook& orderBook) {
+     tuple<bool,double,double> isSellSecondaryBuyPrimaryFeasible(OrderBook& orderBook) {
         if (isSellSecondaryBuyPrimaryPotential(orderBook)) {
             double boqty = bufferredorderqty();
 
@@ -115,22 +117,45 @@ private:
                double primaryavgprice = Utils::avgprice(askqueue, boqty);
 	       if (primaryavgprice == -1) {
                     //avg price cannot be determined
-	            return 0;
+	            return {0,-1,-1};
 	       }
 	       double secondarylfprice = Utils::leastfavourprice(_securitysecmarketbestbid, 0, _pricemargin);
-	       return primaryavgprice < secondarylfprice;
+	       return {primaryavgprice < secondarylfprice,secondarylfprice,primaryavgprice};
 	    } else {
-               return 0;
+               return {0,-1,-1};
 	    }
 
 	} else {
-            return 0;
+            return {0,-1,-1};
+	}
+     }
+
+     void onStrategyCheck(OrderBook& orderBook) {
+        if (_ismminprogress) {
+                cout << "ismminprogress...skip" << endl;
+	} else {
+            tuple<bool,double,double> buysecsellprimaryassess = isBuySecondarySellPrimaryFeasible(orderBook);
+            if (get<0>(buysecsellprimaryassess)) {
+                cout << "prepareing to buy secondary and sell primary..." << endl; 
+
+	    } else {
+                tuple<bool,double,double> sellsecbuyprimaryassess = isSellSecondaryBuyPrimaryFeasible(orderBook);
+		if (get<0>(sellsecbuyprimaryassess)) {
+                   cout << "prepareing to sell secondary and buy primary..." << endl; 
+                } else {
+                   //nothing happen 
+		}
+	    } 
+
+	    
 	}
      }
 
 
+
 public:
-     SimpleMMTradingStrategy(string ccy, double initcashbalance, string symbol, double initinstrumentbalance, double securitysecmarketbestbid, double securitysecmarketbestask, double securitysecmarketbestbidqty, double securitysecmarketbestaskqty,double orderqty,double pricemargin,double orderqtymargin) {
+     SimpleMMTradingStrategy(string id,string ccy, double initcashbalance, string symbol, double initinstrumentbalance, double securitysecmarketbestbid, double securitysecmarketbestask, double securitysecmarketbestbidqty, double securitysecmarketbestaskqty,double orderqty,double pricemargin,double orderqtymargin) {
+        _id=id;
         _ccy=ccy;
 	_symbol=symbol;
 	_initcashbalance=initcashbalance;
@@ -155,6 +180,7 @@ public:
         _securitysecmarketbestbidqty=securitysecmarketbestbidqty;
         _securitysecmarketbestaskqty=securitysecmarketbestaskqty;
      }
+     string id() { return _id; }
      string ccy() { return _ccy; }
      string symbol() { return _symbol; }
      double initcashbalance() { return _initcashbalance; }

@@ -8,7 +8,8 @@
 using namespace std;
 
 DEFINE_TEST(SimpleMMTradingStrategyInit) {
-   SimpleMMTradingStrategy ts = SimpleMMTradingStrategy("USD", 1000000, "TSLA.US", 0, 220, 225, 10000, 30000, 100, 0.01, 0.3);
+   SimpleMMTradingStrategy ts = SimpleMMTradingStrategy("ID1","USD", 1000000, "TSLA.US", 0, 220, 225, 10000, 30000, 100, 0.01, 0.3);
+   TEST("ID1"==ts.id());
    TEST("USD"==ts.ccy());
    TEST("TSLA.US"==ts.symbol());
    TEST(0.0==ts.initinstrumentbalance());
@@ -29,7 +30,7 @@ DEFINE_TEST(SimpleMMTradingStrategyInit) {
 
 
 DEFINE_TEST(SimpleMMTradingStrategyUpdateSecMarket) {
-   SimpleMMTradingStrategy ts = SimpleMMTradingStrategy("USD", 1000000, "TSLA.US", 0, 220, 225, 10000, 30000, 100, 0.01, 0.3);
+   SimpleMMTradingStrategy ts = SimpleMMTradingStrategy("ID2","USD", 1000000, "TSLA.US", 0, 220, 225, 10000, 30000, 100, 0.01, 0.3);
    ts.setsecmarket(218, 220, 2000, 4000);
    TEST(218==ts.securitysecmarketbestbid());
    TEST(2000==ts.securitysecmarketbestbidqty());
