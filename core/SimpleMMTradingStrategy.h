@@ -138,11 +138,18 @@ private:
             tuple<bool,double,double> buysecsellprimaryassess = isBuySecondarySellPrimaryFeasible(orderBook);
             if (get<0>(buysecsellprimaryassess)) {
                 cout << "prepareing to buy secondary and sell primary..." << endl; 
+		//TODO to be implemented
+		double instbalance = _pk->instrumentbalance();
+		bool isshortsell = _orderqty > instbalance;
+		//OrderInfo sellprimaryorder = OrderInfo(_id,nextorderid(),_symbol
 
 	    } else {
                 tuple<bool,double,double> sellsecbuyprimaryassess = isSellSecondaryBuyPrimaryFeasible(orderBook);
 		if (get<0>(sellsecbuyprimaryassess)) {
                    cout << "prepareing to sell secondary and buy primary..." << endl; 
+		   //TODO to be implemented
+		   
+		   
                 } else {
                    //nothing happen 
 		}
@@ -199,6 +206,7 @@ public:
      double orderqtymargin() { return _orderqtymargin; }
      bool ismminprogress() { return _ismminprogress; }
      unsigned int ordercreated() { return _ordercreated; }
+     bool isorderbookrelevant(OrderBook& orderBook) { return _symbol == orderBook.symbol(); }
      string nextorderid() { return _id.append("_ORD_").append(to_string(_ordercreated + 1)); }
      double bufferredorderqty() {
          return _orderqty * (1+_orderqtymargin); 

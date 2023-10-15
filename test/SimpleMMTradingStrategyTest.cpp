@@ -3,9 +3,39 @@
 #include <string.h>
 #include "../simpletest/simpletest.cpp"
 
+#ifndef ORDERBOOK_INCL_H
+#define ORDERBOOK_INCL_H 
+#include "../core/OrderBook.h"
+#endif
+
 #include "../core/SimpleMMTradingStrategy.h"
 
 using namespace std;
+
+class OrderBookSimpleMMTSLocal:public OrderBook {
+private:
+      string _symbol;
+public:
+      string symbol() { return _symbol; }
+      double bestbid() { return 0.0; }
+      double bestask() { return 0.0; }
+      std::vector<std::pair<double,vector<OrderInfo>>> bidqueue() { 
+          OrderInfo oi;
+          std::vector<OrderInfo> v = {oi};
+          std::pair<double,std::vector<OrderInfo>> p=pair(10.0,v);
+          vector<pair<double,vector<OrderInfo>>> r={p};
+          return r;
+      }
+      std::vector<std::pair<double,vector<OrderInfo>>> askqueue() { 
+          OrderInfo oi;
+          std::vector<OrderInfo> v = {oi};
+          std::pair<double,std::vector<OrderInfo>> p=pair(10.0,v);
+          vector<pair<double,vector<OrderInfo>>> r={p};
+          return r;
+      }
+      OrderBookSimpleMMTSLocal(string symbol) {_symbol=symbol;}
+      ~OrderBookSimpleMMTSLocal() { cerr << "OrderBookSimpleMMTSLocal Destructor:" << this << endl; }
+};
 
 DEFINE_TEST(SimpleMMTradingStrategyInit) {
    SimpleMMTradingStrategy ts = SimpleMMTradingStrategy("ID1","USD", 1000000, "TSLA.US", 0, 220, 225, 10000, 30000, 100, 0.01, 0.3);
@@ -28,6 +58,11 @@ DEFINE_TEST(SimpleMMTradingStrategyInit) {
    TEST(0==ts.ordercreated());
    TEST("ID1_ORD_1"==ts.nextorderid()); 
    TEST(100*1.3==ts.bufferredorderqty());
+   OrderBookSimpleMMTSLocal ob1 = OrderBookSimpleMMTSLocal("TSLA.US");
+   OrderBookSimpleMMTSLocal ob2 = OrderBookSimpleMMTSLocal("MSFT.US");
+   TEST(1==ts.isorderbookrelevant(ob1));
+   TEST(0==ts.isorderbookrelevant(ob2));
+
 }
 
 

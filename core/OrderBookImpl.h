@@ -8,7 +8,8 @@
 #endif
 
 class OrderBookImpl:public OrderBook {
-public:  
+public:
+      string symbol() { return "TSLA.US"; }
       double bestbid() { return 0.0; }
       double bestask() { return 0.0; }
       std::vector<std::pair<double,vector<OrderInfo>>> bidqueue() { 

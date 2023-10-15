@@ -14,6 +14,7 @@ using namespace std;
 
 class OrderBook {
 public:
+    virtual string symbol() = 0;
     virtual double bestbid() = 0;
     virtual double bestask() = 0;
     virtual std::vector<std::pair<double,vector<OrderInfo>>> bidqueue() = 0;
