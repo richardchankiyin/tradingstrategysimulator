@@ -36,7 +36,7 @@ public:
     double lastqty() { return _lastqty; }
     double cumqty() { return _cumqty; }
     time_t exectime() { return _exectime; }
-    ~ExecutionReport() { cout << "\nExecutionReport Destructor: " << this << endl; }
+    ~ExecutionReport() { cerr << "\nExecutionReport Destructor: " << this << endl; }
 };
 
 ExecutionReport::ExecutionReport(ExecutionReport& e) {

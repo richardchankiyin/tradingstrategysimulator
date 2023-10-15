@@ -34,7 +34,7 @@ public:
     time_t exectime() { return _exectime; }
     ExecutionReport buyexec() { return _buyexec; }
     ExecutionReport sellexec() { return _sellexec; }
-    ~ExecutionInfo() { cout << "\nExecutionInfo Destructor: " << this << endl; }
+    ~ExecutionInfo() { cerr << "\nExecutionInfo Destructor: " << this << endl; }
     void setbuyexec(ExecutionReport*); 
     void setsellexec(ExecutionReport*); 
    
