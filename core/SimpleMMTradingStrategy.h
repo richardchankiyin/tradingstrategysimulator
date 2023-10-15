@@ -66,6 +66,7 @@ private:
      double _pricemargin;
      double _orderqtymargin;
      bool _ismminprogress;
+     unsigned int _ordercreated;
      PositionKeeper* _pk;
 
      /*
@@ -169,6 +170,7 @@ public:
 	_pricemargin=pricemargin;
 	_orderqtymargin=orderqtymargin;
 	_ismminprogress=0;
+	_ordercreated=0;
 	_pk = new PositionKeeper(_ccy,_initcashbalance,_symbol,_initinstrumentbalance);
      }
      ~SimpleMMTradingStrategy() {
@@ -196,6 +198,8 @@ public:
      double pricemargin() { return _pricemargin; }
      double orderqtymargin() { return _orderqtymargin; }
      bool ismminprogress() { return _ismminprogress; }
+     unsigned int ordercreated() { return _ordercreated; }
+     string nextorderid() { return _id.append("_ORD_").append(to_string(_ordercreated + 1)); }
      double bufferredorderqty() {
          return _orderqty * (1+_orderqtymargin); 
      }  
