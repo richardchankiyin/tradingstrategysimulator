@@ -144,7 +144,7 @@ private:
 	} else {
             tuple<bool,double,double> buysecsellprimaryassess = isBuySecondarySellPrimaryFeasible(orderBook);
             if (get<0>(buysecsellprimaryassess)) {
-                cout << "prepareing to buy secondary and sell primary..." << endl; 
+                cout << "preparing to buy secondary and sell primary..." << endl; 
 		//TODO to be implemented
 		double instbalance = _pk->instrumentbalance();
 		bool isshortsell = _orderqty > instbalance;
