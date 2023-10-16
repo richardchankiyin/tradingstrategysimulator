@@ -150,10 +150,11 @@ private:
 		double buysecondaryprice = get<1>(buysecsellprimaryassess);
 		double sellprimaryprice = get<2>(buysecsellprimaryassess);
 		string sellprimaryorderid = nextorderid();
-		string buysecondaryorderid = sellprimaryorderid.append("_SEC");
+		string buysecondaryorderid = sellprimaryorderid; buysecondaryorderid.append("_SEC");
 		OrderInfo sellprimaryorder = OrderInfo(_id,sellprimaryorderid,_symbol,'D',_orderqty,sellprimaryprice,isshortsell ? '5' : '2', currenttime());
 		OrderInfo buysecondaryorder = OrderInfo(_id,buysecondaryorderid,_symbol,'D',_orderqty,buysecondaryprice,'1',currenttime());
-		_orderstored.insert({++_ordercreated,{buysecondaryorder,sellprimaryorder}});
+		pair<OrderInfo,OrderInfo> orderpair = {buysecondaryorder,sellprimaryorder};
+		_orderstored.insert({++_ordercreated,orderpair});
 		// for sell order first deduct instrument balance and wait for execution to add cash balance back
 		_pk->addinstrument(-1 * _orderqty);
 		// set is_mminprogress as truea
@@ -173,10 +174,11 @@ private:
                        cout << "warning!!!buyprimarynominal:" << buyprimarynominal << "> cashbalance:" << cbalance << endl;
 		   } else {
 		       string buyprimaryorderid = nextorderid();
-		       string sellsecondaryorderid = buyprimaryorderid.append("_SEC");
+		       string sellsecondaryorderid = buyprimaryorderid + "_SEC";
 		       OrderInfo buyprimaryorder = OrderInfo(_id,buyprimaryorderid,_symbol,'D',_orderqty,buyprimaryprice,'1', currenttime());
 		       OrderInfo sellsecondaryorder = OrderInfo(_id,sellsecondaryorderid,_symbol,'D',_orderqty,sellsecondaryprice,'2',currenttime());
-		       _orderstored.insert({++_ordercreated,{sellsecondaryorder,buyprimaryorder}});
+		       pair<OrderInfo,OrderInfo> orderpair = {sellsecondaryorder,buyprimaryorder};
+		       _orderstored.insert({++_ordercreated,orderpair});
 
 		       // for buy order first deduct cash balance and wait for execution to add instrument balance back
 		       _pk->addcash(-1 * buyprimarynominal);
@@ -219,7 +221,9 @@ private:
       * always fully filled
       */
      ExecutionReport tradeSecondaryMarket(OrderInfo oi) {
-          ExecutionReport er = ExecutionReport(oi.orderid().append("_EXEC"),oi.symbol(),oi.orderid(),'8',oi.price(),oi.orderqty(),oi.orderqty(),oi.orderqty(),oi.side(),currenttime());
+          bool isbuy = oi.side() == '1';
+	  double price = isbuy ? _securitysecmarketbestask : _securitysecmarketbestbid;
+          ExecutionReport er = ExecutionReport(oi.orderid().append("_EXEC"),oi.symbol(),oi.orderid(),'8',price,oi.orderqty(),oi.orderqty(),oi.orderqty(),oi.side(),currenttime());
 	  return er;   
      }
 
@@ -270,7 +274,10 @@ public:
      bool ismminprogress() { return _ismminprogress; }
      unsigned int ordercreated() { return _ordercreated; }
      bool isorderbookrelevant(OrderBook& orderBook) { return _symbol == orderBook.symbol(); }
-     string nextorderid() { return _id.append("_ORD_").append(to_string(_ordercreated + 1)); }
+     string nextorderid() { 
+	     string result = _id;
+	     result.append("_ORD_").append(to_string(_ordercreated + 1));
+	     return result; }
      time_t currenttime() { return _clock == nullptr ? time(0) : _clock->currenttime(); }
      OrderInfo outstandingorder() { return _ismminprogress ? _orderstored.find(_ordercreated)->second.second : OrderInfo(); }
      OrderInfo outstandingsecorder() { return _ismminprogress ? _orderstored.find(_ordercreated)->second.first : OrderInfo(); }
@@ -281,8 +288,12 @@ public:
         if (!isorderbookrelevant(orderBook)) {
              return ;
 	}
-	// no special handling for market execption handling, just need to trigger strategy check
-	 onStrategyCheck(orderBook);
+	if (_ismminprogress) {
+	   // no special handling for market execption handling, just need to trigger strategy check
+	   // TODO
+	} else {
+	    onStrategyCheck(orderBook);
+	}
      }
      void onOrderCancel(OrderBook& orderBook, const OrderInfo& orderInfo) {
         if (!isorderbookrelevant(orderBook)) {
@@ -292,10 +303,11 @@ public:
             // pending order cancel to come back for trading strategy market exception handling
             //TODO to be implemented
 	    
+	} else {
+            // perform strategy checking	
+            onStrategyCheck(orderBook);
 	}
 
-        // perform strategy checking	
-        onStrategyCheck(orderBook);
      }
      void onOrderExecution(OrderBook& orderBook, const OrderInfo& orderInfo, const ExecutionInfo& executionInfo) {
         if (!isorderbookrelevant(orderBook)) {
@@ -327,10 +339,12 @@ public:
 		}
 	    }
 	    
+	} else {
+
+            // perform strategy checking	
+            onStrategyCheck(orderBook);
 	}
 
-        // perform strategy checking	
-        onStrategyCheck(orderBook);
 	
      }
      void onSendOrder(OrderBook& orderBook, const OrderInfo& orderInfo) {
