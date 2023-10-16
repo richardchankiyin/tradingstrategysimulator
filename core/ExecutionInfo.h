@@ -19,8 +19,6 @@ private:
     double _qty;
     // active buy - 'A'; active sell - 'B'
     char _activeside;
-    ExecutionReport _buyexec;
-    ExecutionReport _sellexec;
     // equivalent to fix tag 60
     time_t _exectime;
 
@@ -39,6 +37,8 @@ public:
     void setbuyexec(ExecutionReport*); 
     void setsellexec(ExecutionReport*); 
    
+    ExecutionReport _buyexec;
+    ExecutionReport _sellexec;
 };
 
 ExecutionInfo::ExecutionInfo(string execid,string symbol,double price,double qty,char activeside,ExecutionReport buyexec, ExecutionReport sellexec,time_t exectime=time(0)) {

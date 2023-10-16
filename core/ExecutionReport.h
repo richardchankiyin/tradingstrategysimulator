@@ -31,7 +31,6 @@ private:
 public:
     ExecutionReport() {}
     ExecutionReport(string,string,string,char,double,double,double,double,char,time_t);
-    ExecutionReport(ExecutionReport&);
     string execid() { return _execid; }
     string symbol() { return _symbol; }
     string orderid() { return _orderid; }
@@ -45,19 +44,6 @@ public:
     time_t exectime() { return _exectime; }
     ~ExecutionReport() { cerr << "\nExecutionReport Destructor: " << this << endl; }
 };
-
-ExecutionReport::ExecutionReport(ExecutionReport& e) {
-    _execid=e.execid();
-    _symbol=e.symbol();
-    _orderid=e.orderid();
-    _orderstatus=e.orderstatus();
-    _price=e.price();
-    _qty=e.qty();
-    _lastqty=e.lastqty();
-    _cumqty=e.cumqty();
-    _exectime=e.exectime();
-}
-
 
 ExecutionReport::ExecutionReport(string execid,string symbol,string orderid,char orderstatus,double price,double qty,double lastqty,double cumqty,char side,time_t exectime=time(0)) {
     _execid=execid;

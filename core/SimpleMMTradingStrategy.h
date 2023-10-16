@@ -195,6 +195,33 @@ private:
      }
 
 
+     void settleSellPrimaryBuySecondary(ExecutionReport buysecondaryer, ExecutionReport sellprimaryer) {
+         // sell primary buy secondary -> deduct stock, then add stock, add cash (primary nominal - secondary nominal)	
+         double filledqty = sellprimaryer.cumqty();
+	 _pk->addinstrument(filledqty);
+	 double primarynominal = sellprimaryer.price() * sellprimaryer.cumqty();
+	 double secondarynominal = buysecondaryer.price() * buysecondaryer.cumqty();
+	 _pk->addcash(primarynominal-secondarynominal);
+     }
+
+     void settleBuyPrimarySellSecondary(ExecutionReport sellsecondaryer, ExecutionReport buyprimaryer) {
+	 // buy primary sell secondary -> deduct cash, then add cash with secondary nominal 
+	 double secondarynominal = sellsecondaryer.price() * sellsecondaryer.cumqty();
+	 _pk->addcash(secondarynominal);
+     }
+
+     void posttrade(OrderInfo secondaryorder, ExecutionReport secondaryer, OrderInfo primaryorder, ExecutionReport primaryer) {
+         //TODO a function to send order to post trade analysis/middle office
+	 cout << "Post Trading processing...." << endl;
+     }
+     /**
+      * This is a function to mimic secondary market trading
+      * always fully filled
+      */
+     ExecutionReport tradeSecondaryMarket(OrderInfo oi) {
+          ExecutionReport er = ExecutionReport(oi.orderid().append("_EXEC"),oi.symbol(),oi.orderid(),'8',oi.price(),oi.orderqty(),oi.orderqty(),oi.orderqty(),oi.side(),currenttime());
+	  return er;   
+     }
 
 public:
      SimpleMMTradingStrategy(string id,string ccy, double initcashbalance, string symbol, double initinstrumentbalance, double securitysecmarketbestbid, double securitysecmarketbestask, double securitysecmarketbestbidqty, double securitysecmarketbestaskqty,double orderqty,double pricemargin,double orderqtymargin,Clock* clock) {
@@ -246,6 +273,7 @@ public:
      string nextorderid() { return _id.append("_ORD_").append(to_string(_ordercreated + 1)); }
      time_t currenttime() { return _clock == nullptr ? time(0) : _clock->currenttime(); }
      OrderInfo outstandingorder() { return _ismminprogress ? _orderstored.find(_ordercreated)->second.second : OrderInfo(); }
+     OrderInfo outstandingsecorder() { return _ismminprogress ? _orderstored.find(_ordercreated)->second.first : OrderInfo(); }
      double bufferredorderqty() {
          return _orderqty * (1+_orderqtymargin); 
      }  
@@ -262,7 +290,8 @@ public:
 	}
         if (_ismminprogress) {
             // pending order cancel to come back for trading strategy market exception handling
-            //TODO
+            //TODO to be implemented
+	    
 	}
 
         // perform strategy checking	
@@ -275,11 +304,27 @@ public:
         cerr << "onOrderExecution triggered......" << endl;
         if (_ismminprogress) {
             // pending execution report to coming for second market leg handling, PK balance update and other post trade processes
-            //TODO
 	    OrderInfo outstandingprimaryorder = outstandingorder();
 	    OrderInfo incomingorder = orderInfo;
 	    if (incomingorder.orderid() == outstandingprimaryorder.orderid()) {
                 // match outstanding, proceed to check status
+	        bool isoutstandingprimaryorderbuy=outstandingprimaryorder.side()=='1';
+		ExecutionReport outstandingprimaryorderexecutionreport = isoutstandingprimaryorderbuy ? executionInfo._buyexec : executionInfo._sellexec;
+		// check from execution report status is fully filled ('8')
+		if (outstandingprimaryorderexecutionreport.orderstatus() == '8') {
+			OrderInfo outstandingsecondaryorder = outstandingsecorder();
+			ExecutionReport outstandingsecondaryorderexecutionreport = tradeSecondaryMarket(outstandingsecondaryorder);
+			if (isoutstandingprimaryorderbuy) {
+                            settleBuyPrimarySellSecondary(outstandingsecondaryorderexecutionreport,outstandingprimaryorderexecutionreport);
+			} else {
+                            settleSellPrimaryBuySecondary(outstandingsecondaryorderexecutionreport,outstandingprimaryorderexecutionreport);
+			}
+			posttrade(outstandingsecondaryorder,outstandingsecondaryorderexecutionreport,outstandingprimaryorder,outstandingprimaryorderexecutionreport);
+			_ismminprogress=0;
+		} else {
+                    //TODO for partial fill or reject case they are execption and to be handled here
+		    //to be implemented
+		}
 	    }
 	    
 	}
